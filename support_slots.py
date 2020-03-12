@@ -382,15 +382,16 @@ class MainWindowSlots(Ui_Form):   # Определяем функции, кот�
                                 withChildrensPets = cell.value
                             elif j == xlsx_header['Дополнительно']:
                                 additional = cell.value
-                            elif j == xlsx_header['Высота потолков, м']:
-                                if cell.value:
-                                    height = float(cell.value)
                             elif j == xlsx_header['Лифт']:
                                 lift = cell.value
                             elif j == xlsx_header['Мусоропровод']:
                                 chute = cell.value
                             elif j == xlsx_header['Ссылка на объявление']:
                                 linkINfinder = cell.value
+                            elif xlsx_header.get('Высота потолков, м', None):
+                                if j == xlsx_header['Высота потолков, м']:
+                                    if cell.value:
+                                        height = float(cell.value)
                         cursorObj = self.con.cursor()
                         if idINfinder:
                             if idINfinder in self.cianIDs:
