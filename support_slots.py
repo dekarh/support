@@ -283,18 +283,18 @@ class MainWindowSlots(Ui_Form):   # Определяем функции, кот�
                 for i, row in enumerate(ws):
                     if i:
                         for j, cell in enumerate(row):
-                            if j == xlsx_header['ID  объявления']:
+                            if j == xlsx_header.get('ID  объявления', -1):
                                 idINfinder = int(cell.value)
                                 if not idINfinder:
                                     continue
-                            elif j == xlsx_header['Количество комнат']:
+                            elif j == xlsx_header.get('Количество комнат', -1):
                                 roomCount = l(str(cell.value).split(',')[0])
                                 # !!!!!!!!!!!!!!!!!!!!!! Недоделал Изолированные-неизолированные
-                            elif j == xlsx_header['Тип']:
+                            elif j == xlsx_header.get('Тип', -1):
                                 typeObj = cell.value
-                            elif j == xlsx_header['Метро']:
+                            elif j == xlsx_header.get('Метро', -1):
                                 metro = cell.value
-                            elif j == xlsx_header['Адрес']:
+                            elif j == xlsx_header.get('Адрес', -1):
                                 addressStopped = ''
                                 for adr in str(cell.value).lower().split(','):
                                     stopped = False
@@ -320,7 +320,7 @@ class MainWindowSlots(Ui_Form):   # Определяем функции, кот�
                                     else:
                                         address += addr + ' '
                                 address = address.strip()
-                            elif j == xlsx_header['Площадь, м2']:
+                            elif j == xlsx_header.get('Площадь, м2', -1):
                                 parts = str(cell.value).split('/')
                                 for k, part in enumerate(parts):
                                     if k == 0:
@@ -329,7 +329,7 @@ class MainWindowSlots(Ui_Form):   # Определяем функции, кот�
                                         squareLive = float(part)
                                     elif k == 2:
                                         squareKitchen = float(part)
-                            elif j == xlsx_header['Дом']:
+                            elif j == xlsx_header.get('Дом', -1):
                                 homes = str(cell.value).split(',')
                                 for home in homes:
                                     if home.find('/') > -1:
@@ -337,9 +337,9 @@ class MainWindowSlots(Ui_Form):   # Определяем функции, кот�
                                         maxFloor = l(home.split('/')[1])
                                     else:
                                         buildingType = home
-                            elif j == xlsx_header['Парковка']:
+                            elif j == xlsx_header.get('Парковка', -1):
                                 parking = cell.value
-                            elif j == xlsx_header['Цена']:
+                            elif j == xlsx_header.get('Цена', -1):
                                 parts = str(cell.value).split(',')
                                 for k, part in enumerate(parts):
                                     if k == 0:
@@ -347,7 +347,7 @@ class MainWindowSlots(Ui_Form):   # Определяем функции, кот�
                                     elif part.find('Залог') > -1:
                                         zalog = int(part.split('алог - ')[1].split(' руб')[0])
                                 # !!!!!! Не доделал комунальные услуги, срок и предоплату !!!!!!!!!!!
-                            elif j == xlsx_header['Комиссия']:
+                            elif j == xlsx_header.get('Комиссия', -1):
                                 parts = str(cell.value).split(',')
                                 if len(parts) > 1:
                                     for part in parts:
@@ -358,7 +358,7 @@ class MainWindowSlots(Ui_Form):   # Определяем функции, кот�
                                 else:
                                     if parts[0].strip() != '':
                                         buyerComission, agentComission = l(parts[0]),l(parts[0])
-                            elif j == xlsx_header['Телефоны']:
+                            elif j == xlsx_header.get('Телефоны', -1):
                                 parts = str(cell.value).split(',')
                                 if len(parts) > 0:
                                     phone1 = format_phone(parts[0])
@@ -366,32 +366,31 @@ class MainWindowSlots(Ui_Form):   # Определяем функции, кот�
                                     phone2 = format_phone(parts[1])
                                 if len(parts) > 2:
                                     phone3 = format_phone(parts[2])
-                            elif j == xlsx_header['Описание']:
+                            elif j == xlsx_header.get('Описание', -1):
                                 about = cell.value
-                            elif j == xlsx_header['Ремонт']:
+                            elif j == xlsx_header.get('Ремонт', -1):
                                 remont = cell.value
-                            elif j == xlsx_header['Площадь комнат, м2']:
+                            elif j == xlsx_header.get('Площадь комнат, м2', -1):
                                 roomSquare = cell.value
-                            elif j == xlsx_header['Балкон']:
+                            elif j == xlsx_header.get('Балкон', -1):
                                 balcon = cell.value
-                            elif j == xlsx_header['Окна']:
+                            elif j == xlsx_header.get('Окна', -1):
                                 windows = cell.value
-                            elif j == xlsx_header['Санузел']:
+                            elif j == xlsx_header.get('Санузел', -1):
                                 sanuzel = cell.value
-                            elif j == xlsx_header['Можно с детьми/животными']:
+                            elif j == xlsx_header.get('Можно с детьми/животными', -1):
                                 withChildrensPets = cell.value
-                            elif j == xlsx_header['Дополнительно']:
+                            elif j == xlsx_header.get('Дополнительно', -1):
                                 additional = cell.value
-                            elif j == xlsx_header['Лифт']:
+                            elif j == xlsx_header.get('Лифт', -1):
                                 lift = cell.value
-                            elif j == xlsx_header['Мусоропровод']:
+                            elif j == xlsx_header.get('Мусоропровод', -1):
                                 chute = cell.value
-                            elif j == xlsx_header['Ссылка на объявление']:
+                            elif j == xlsx_header.get('Ссылка на объявление', -1):
                                 linkINfinder = cell.value
-                            elif xlsx_header.get('Высота потолков, м', None):
-                                if j == xlsx_header['Высота потолков, м']:
-                                    if cell.value:
-                                        height = float(cell.value)
+                            elif j == xlsx_header.get('Высота потолков, м', -1):
+                                if cell.value:
+                                    height = float(cell.value)
                         cursorObj = self.con.cursor()
                         if idINfinder:
                             if idINfinder in self.cianIDs:
