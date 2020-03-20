@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>149</width>
+    <width>246</width>
     <height>698</height>
    </rect>
   </property>
@@ -91,7 +91,14 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QLineEdit" name="leCost">
+       <widget class="QLineEdit" name="leCostMin">
+        <property name="text">
+         <string>0</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="leCostMax">
         <property name="text">
          <string>100000</string>
         </property>
@@ -99,8 +106,14 @@
       </item>
       <item>
        <widget class="QLineEdit" name="leComission">
+        <property name="maximumSize">
+         <size>
+          <width>80</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="text">
-         <string>60</string>
+         <string>50</string>
         </property>
        </widget>
       </item>

@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(149, 698)
+        Form.resize(246, 698)
         self.verticalLayout = QtWidgets.QVBoxLayout(Form)
         self.verticalLayout.setObjectName("verticalLayout")
         self.frameComission_2 = QtWidgets.QFrame(Form)
@@ -47,10 +47,14 @@ class Ui_Form(object):
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.frameComission)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.leCost = QtWidgets.QLineEdit(self.frameComission)
-        self.leCost.setObjectName("leCost")
-        self.horizontalLayout.addWidget(self.leCost)
+        self.leCostMin = QtWidgets.QLineEdit(self.frameComission)
+        self.leCostMin.setObjectName("leCostMin")
+        self.horizontalLayout.addWidget(self.leCostMin)
+        self.leCostMax = QtWidgets.QLineEdit(self.frameComission)
+        self.leCostMax.setObjectName("leCostMax")
+        self.horizontalLayout.addWidget(self.leCostMax)
         self.leComission = QtWidgets.QLineEdit(self.frameComission)
+        self.leComission.setMaximumSize(QtCore.QSize(80, 16777215))
         self.leComission.setObjectName("leComission")
         self.horizontalLayout.addWidget(self.leComission)
         self.verticalLayout.addWidget(self.frameComission)
@@ -172,7 +176,8 @@ class Ui_Form(object):
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
-        self.leCost.setText(_translate("Form", "100000"))
-        self.leComission.setText(_translate("Form", "60"))
+        self.leCostMin.setText(_translate("Form", "0"))
+        self.leCostMax.setText(_translate("Form", "100000"))
+        self.leComission.setText(_translate("Form", "50"))
         self.lblCount.setText(_translate("Form", "0"))
 

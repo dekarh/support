@@ -55,7 +55,8 @@ class MainWindowSlots(Ui_Form):   # Определяем функции, кот�
         self.avitoIDs = tuple()
         self.cianIDs = tuple()
         self.lwStatuses.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.cutCost = l(self.leCost.text())
+        self.cutCostMin = l(self.leCostMin.text())
+        self.cutCostMax = l(self.leCostMax.text())
         for status in STATUSES:
             item = QListWidgetItem(status)
             self.lwStatuses.addItem(item)
@@ -165,7 +166,9 @@ class MainWindowSlots(Ui_Form):   # Определяем функции, кот�
                 continue
             if self.cardStatuses[k] not in self.cutStatuses:
                 continue
-            if card[self.colNames['cost']] > self.cutCost:
+            if card[self.colNames['cost']] > self.cutCostMax:
+                continue
+            if card[self.colNames['cost']] < self.cutCostMin:
                 continue
             self.table2base[idTable] = k
             idTable += 1
@@ -522,7 +525,8 @@ class MainWindowSlots(Ui_Form):   # Определяем функции, кот�
         self.load_lwCards()
 
     def leCost_changed(self):
-        self.cutCost = l(self.leCost.text())
+        self.cutCostMin = l(self.leCostMin.text())
+        self.cutCostMax = l(self.leCostMax.text())
         self.load_lwCards()
 
     def click_clbTrash(self):
