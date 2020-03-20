@@ -214,7 +214,7 @@ class MainWindow(QMainWindow):
             for card in cards:
                 linkINfinder, address, metro = '', '', ''
                 floor, maxFloor, roomCount, agentComission, buyerComission, idINfinder, cost = 0, 0, 0, 0, 0, 0, 0
-                metroMeters = -1
+                metroMeters = 0
                 square = 0.0
                 for element in card.getiterator():
                     if element.attrib.get('class', None):

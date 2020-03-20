@@ -24,6 +24,8 @@ class MainWindow(MainWindowSlots):
         self.leComission.textChanged[str].connect(self.leComission_changed)
         self.leCostMax.textChanged[str].connect(self.leCost_changed)
         self.leCostMin.textChanged[str].connect(self.leCost_changed)
+        self.leMetroMetersMax.textChanged[str].connect(self.leMetro_changed)
+        self.leMetroMinutesMax.textChanged[str].connect(self.leMetro_changed)
         self.clbLoad.clicked.connect(self.click_clbLoad)
         self.clbUpdate.clicked.connect(self.click_clbUpdate)
         #self.clbTrash.connect(self.click_clbTrash)

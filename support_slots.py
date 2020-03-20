@@ -57,6 +57,8 @@ class MainWindowSlots(Ui_Form):   # Определяем функции, кот�
         self.lwStatuses.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.cutCostMin = l(self.leCostMin.text())
         self.cutCostMax = l(self.leCostMax.text())
+        self.cutMetroMetersMax = l(self.leMetroMetersMax.text())
+        self.cutMetroMinutesMax = l(self.leMetroMinutesMax.text())
         for status in STATUSES:
             item = QListWidgetItem(status)
             self.lwStatuses.addItem(item)
@@ -121,7 +123,7 @@ class MainWindowSlots(Ui_Form):   # Определяем функции, кот�
             # создаем структуру БД
             cursorObj.execute("CREATE TABLE cards(id integer NOT NULL PRIMARY KEY, finderType integer, "
                               "idINfinder integer KEY, linkINfinder text, address text KEY, roomCount integer, "
-                              "typeObj text, metro text, metroMeters integer, metroMinuts integer, square float, "
+                              "typeObj text, metro text, metroMeters integer, metroMinutes integer, square float, "
                               "floor integer, maxFloor integer, parking text, phone1 biginteger, phone2 biginteger, "
                               "phone3 biginteger, about text, remont text, roomSquare text, balcon text, windows text, "
                               "sanuzel text, withChildrensPets text, additional text, buildingSeria text, height float,"
@@ -170,6 +172,12 @@ class MainWindowSlots(Ui_Form):   # Определяем функции, кот�
                 continue
             if card[self.colNames['cost']] < self.cutCostMin:
                 continue
+            if self.cutMetroMetersMax and card[self.colNames['metroMeters']]:
+                if card[self.colNames['metroMeters']] > self.cutMetroMetersMax:
+                    continue
+            if self.cutMetroMinutesMax and card[self.colNames['metroMinutes']]:
+                if card[self.colNames['metroMinutes']] > self.cutMetroMinutesMax:
+                    continue
             self.table2base[idTable] = k
             idTable += 1
             addressList = str(card[self.colNames['address']]).lower().replace(',','').replace('.','').replace('  ',' ')\
@@ -437,6 +445,7 @@ class MainWindowSlots(Ui_Form):   # Определяем функции, кот�
                 finderType = 2
                 linkINfinder, address, metro = '', '', ''
                 floor, maxFloor, roomCount, agentComission, buyerComission, idINfinder, cost = 0, 0, 0, 0, 0, 0, 0
+                metroMeters = 0
                 square = 0.0
                 for i, row in enumerate(ws):
                     if i:
@@ -451,6 +460,8 @@ class MainWindowSlots(Ui_Form):   # Определяем функции, кот�
                                 address = cell.value
                             elif j == xlsx_header['metro']:
                                 metro = cell.value
+                            elif j == xlsx_header['metroMeters']:
+                                metroMeters = cell.value
                             elif j == xlsx_header['floor']:
                                 floor = int(cell.value)
                             elif j == xlsx_header['maxFloor']:
@@ -469,23 +480,31 @@ class MainWindowSlots(Ui_Form):   # Определяем функции, кот�
                         if idINfinder:
                             if idINfinder in self.avitoIDs:
                                 cursorObj.execute("""UPDATE cards SET linkINfinder = ?, address = ?, metro = ?,
-                                floor = ?, maxFloor = ?, roomCount = ?, agentComission = ?, buyerComission = ?, 
-                                square = ?, cost = ? WHERE idINfinder = ?""",
-                                                  (linkINfinder, address, metro, floor, maxFloor, roomCount,
-                                                   agentComission, buyerComission, square, cost, idINfinder))
+                                metroMeters = ? floor = ?, maxFloor = ?, roomCount = ?, agentComission = ?, 
+                                buyerComission = ?, square = ?, cost = ? WHERE idINfinder = ?""",
+                                                  (linkINfinder, address, metro, metroMeters, floor, maxFloor,
+                                                   roomCount, agentComission, buyerComission, square, cost, idINfinder))
                             else:
                                 cursorObj.execute("INSERT INTO cards (idINfinder, linkINfinder, address, metro, "
-                                                  "floor, maxFloor, roomCount, agentComission, buyerComission, "
-                                                  "square, cost, finderType) "
+                                                  "metroMeters, floor, maxFloor, roomCount, agentComission, "
+                                                  "buyerComission, square, cost, finderType) "
                                                   "VALUES(?,?,?,?,?,?,?,?,?,?,?,?)", (idINfinder, linkINfinder,
-                                                                                  address, metro, floor, maxFloor,
-                                                                                  roomCount, agentComission,
+                                                                                  address, metro, metroMeters, floor,
+                                                                                  maxFloor, roomCount, agentComission,
                                                                                   buyerComission, square, cost,
                                                                                   finderType))
                             self.con.commit()
                             self.avitoIDs += (idINfinder,)
 
         self.loadBase()
+        return
+
+    def leMetro_changed(self):
+        if l(self.leMetroMetersMax.text()) < 0 or l(self.leMetroMinutesMax.text()) < 0:
+            return
+        self.cutMetroMetersMax = l(self.leMetroMetersMax.text())
+        self.cutMetroMinutesMax = l(self.leMetroMinutesMax.text())
+        self.click_lwCards()
         return
 
     def leComission_changed(self):
@@ -502,6 +521,7 @@ class MainWindowSlots(Ui_Form):   # Определяем функции, кот�
             tableNum = self.lwCards.currentIndex().row()
         cardNum = self.table2base[tableNum]
         p = Popen(['firefox', self.cards[cardNum][self.colNames['linkINfinder']]])
+        return
 
     def click_clbUpdate(self):
         tableNum = 0
@@ -515,6 +535,7 @@ class MainWindowSlots(Ui_Form):   # Определяем функции, кот�
                            self.dateTimeEdit.dateTime().toPyDateTime(), self.leNote.text(), idCard))
         self.con.commit()
         self.loadBase()
+        return
 
     def click_lwStatuses(self):
         items = self.lwStatuses.selectedItems()
@@ -523,11 +544,13 @@ class MainWindowSlots(Ui_Form):   # Определяем функции, кот�
             x.append(str(self.lwStatuses.selectedItems()[i].text()))
         self.cutStatuses = tuple(x)
         self.load_lwCards()
+        return
 
     def leCost_changed(self):
         self.cutCostMin = l(self.leCostMin.text())
         self.cutCostMax = l(self.leCostMax.text())
         self.load_lwCards()
+        return
 
     def click_clbTrash(self):
         # Недоделанный скрипт удаления дублей
