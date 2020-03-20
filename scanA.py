@@ -24,7 +24,7 @@ CUTS = ('пгт', 'поселок городского типа',  'посёло
           'гск', 'гаражно-строительный кооператив', 'гк', 'гаражный кооператив', 'кв-л', 'квартал', 'линия',
          'лин', 'наб', 'набережная', 'переулок', 'пер', 'переезд', 'пл', 'площадь', 'пр-кт', 'пр-т', 'проспект', 'пр',
          'проезд', 'тер', 'терр', 'территория', 'туп', 'тупик', 'ул', 'улица', 'ш', 'шоссе')
-STOPWORDS = ('мкр', 'микрорайон', 'область', 'обл', 'район', 'р-н' , 'поселок', 'посёлок', 'город', 'городок',
+STOPWORDS = ('мкр', 'микрорайон', 'область', 'обл', 'район', 'р-н' , 'пос', 'поселок', 'посёлок', 'город', 'городок',
              'москва', 'московская', 'люберцы', 'реутов', 'апрелевка', 'балашиха', 'бронницы', 'верея', 'видное',
              'Волоколамск', 'Воскресенск', 'Высоковск', 'Голицыно', 'Дедовск', 'Дзержинский', 'Дмитров',
              'долгопрудный', 'домодедово', 'дрезна', 'дубна', 'егорьевск', 'жуковский', 'зарайск', 'звенигород',
@@ -178,8 +178,8 @@ class MainWindow(QMainWindow):
         self.idINfinderS = tuple()
         self.wb = openpyxl.Workbook(write_only=True)
         self.ws = self.wb.create_sheet('Авито')
-        self.ws.append(['idINfinder','linkINfinder','address','metro','floor','maxFloor','roomCount','agentComission',
-                        'buyerComission','square', 'cost'])
+        self.ws.append(['idINfinder','linkINfinder','address','metro', 'metroMeters','floor','maxFloor','roomCount',
+                        'agentComission', 'buyerComission','square', 'cost'])
         # ----------
         self.show()
 
@@ -214,6 +214,7 @@ class MainWindow(QMainWindow):
             for card in cards:
                 linkINfinder, address, metro = '', '', ''
                 floor, maxFloor, roomCount, agentComission, buyerComission, idINfinder, cost = 0, 0, 0, 0, 0, 0, 0
+                metroMeters = -1
                 square = 0.0
                 for element in card.getiterator():
                     if element.attrib.get('class', None):
@@ -247,14 +248,8 @@ class MainWindow(QMainWindow):
                                 if not stopped:
                                     addressStopped += ' ' + adr
                             addressList = addressStopped.strip().replace(',', '').replace('.', '') \
-                                .replace('  ', ' ').replace('  ', ' ').split(' ')
-                            firsts = str(addressList).lower().strip().strip('\n').split(',')
-                            if firsts[len(firsts)-1].strip()[0] in string.digits or (firsts[len(firsts)-1].strip()[0]
-                                                         == 'к' and firsts[len(firsts)-1].strip()[1] in string.digits):
-                                filteredAddres = firsts[len(firsts)-2].strip() + ' ' + firsts[len(firsts)-1].strip()
-                            else:
-                                filteredAddres = firsts[len(firsts) - 1]
-                            addressFine = filteredAddres.replace(',', '').replace('.', '') \
+                                .replace('  ', ' ').replace('  ', ' ')
+                            addressFine = addressList.replace(',', '').replace('.', '') \
                                 .replace('  ', ' ').replace('  ', ' ').strip().strip().split(' ')
                             address = ''
                             addrs = []
@@ -280,8 +275,14 @@ class MainWindow(QMainWindow):
                             metro = str(element.text)
                         elif 'item-address-georeferences-item__after' in str(element.attrib['class']).split():
                             metro += ' ' + str(element.text)
+                            if str(element.text).find('km') > -1 or str(element.text).find('км') > -1:
+                                metroMeters = int(float(str(element.text).rstrip('.').replace('km', '').
+                                                        replace('км', '').strip('\n').replace(',', '.').strip()) * 1000)
+                            else:
+                                metroMeters = int(float(str(element.text).rstrip('.').replace('m', '').replace('м', '')
+                                                    .strip('\n').replace(',', '.').strip()))
                 if idINfinder not in self.idINfinderS:
-                    self.ws.append([idINfinder, linkINfinder, address, metro, floor, maxFloor, roomCount,
+                    self.ws.append([idINfinder, linkINfinder, address, metro, metroMeters, floor, maxFloor, roomCount,
                                 agentComission, buyerComission, square, cost])
                     self.idINfinderS += (idINfinder,)
             if self.chbSummON:

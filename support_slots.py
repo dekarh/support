@@ -121,11 +121,11 @@ class MainWindowSlots(Ui_Form):   # Определяем функции, кот�
             # создаем структуру БД
             cursorObj.execute("CREATE TABLE cards(id integer NOT NULL PRIMARY KEY, finderType integer, "
                               "idINfinder integer KEY, linkINfinder text, address text KEY, roomCount integer, "
-                              "typeObj text, metro text, square float, floor integer, maxFloor integer,"
-                              " parking text, phone1 biginteger, phone2 biginteger, phone3 biginteger, "
-                              "about text, remont text, roomSquare text, balcon text, windows text, sanuzel text, "
-                              "withChildrensPets text, additional text, buildingSeria text, height float, lift text, "
-                              "chute text, idObject integer, cardStatus integer, agentComission integer, "
+                              "typeObj text, metro text, metroMeters integer, metroMinuts integer, square float, "
+                              "floor integer, maxFloor integer, parking text, phone1 biginteger, phone2 biginteger, "
+                              "phone3 biginteger, about text, remont text, roomSquare text, balcon text, windows text, "
+                              "sanuzel text, withChildrensPets text, additional text, buildingSeria text, height float,"
+                              " lift text, chute text, idObject integer, cardStatus integer, agentComission integer, "
                               "buyerComission integer, buildingType text, cost integer, sostav text, "
                               "status text, showingAT timestamp, zalog integer, squareLive float, "
                               "squareKitchen float, note text)")
