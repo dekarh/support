@@ -480,7 +480,7 @@ class MainWindowSlots(Ui_Form):   # Определяем функции, кот�
                         if idINfinder:
                             if idINfinder in self.avitoIDs:
                                 cursorObj.execute("""UPDATE cards SET linkINfinder = ?, address = ?, metro = ?,
-                                metroMeters = ? floor = ?, maxFloor = ?, roomCount = ?, agentComission = ?, 
+                                metroMeters = ?, floor = ?, maxFloor = ?, roomCount = ?, agentComission = ?, 
                                 buyerComission = ?, square = ?, cost = ? WHERE idINfinder = ?""",
                                                   (linkINfinder, address, metro, metroMeters, floor, maxFloor,
                                                    roomCount, agentComission, buyerComission, square, cost, idINfinder))
@@ -488,7 +488,7 @@ class MainWindowSlots(Ui_Form):   # Определяем функции, кот�
                                 cursorObj.execute("INSERT INTO cards (idINfinder, linkINfinder, address, metro, "
                                                   "metroMeters, floor, maxFloor, roomCount, agentComission, "
                                                   "buyerComission, square, cost, finderType) "
-                                                  "VALUES(?,?,?,?,?,?,?,?,?,?,?,?)", (idINfinder, linkINfinder,
+                                                  "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)", (idINfinder, linkINfinder,
                                                                                   address, metro, metroMeters, floor,
                                                                                   maxFloor, roomCount, agentComission,
                                                                                   buyerComission, square, cost,
@@ -504,6 +504,7 @@ class MainWindowSlots(Ui_Form):   # Определяем функции, кот�
             return
         self.cutMetroMetersMax = l(self.leMetroMetersMax.text())
         self.cutMetroMinutesMax = l(self.leMetroMinutesMax.text())
+        self.load_lwCards()
         self.click_lwCards()
         return
 

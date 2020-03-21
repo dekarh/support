@@ -142,7 +142,7 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QLineEdit" name="leMetroMinutesMax">
+       <widget class="QLineEdit" name="leMetroMetersMax">
         <property name="text">
          <string>10000</string>
         </property>
@@ -156,7 +156,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="leMetroMetersMax">
+       <widget class="QLineEdit" name="leMetroMinutesMax">
         <property name="text">
          <string>45</string>
         </property>

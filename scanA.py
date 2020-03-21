@@ -258,13 +258,14 @@ class MainWindow(QMainWindow):
                                     addrs.append(adr)
                             missed = -1
                             for i, addr in enumerate(addrs):
-                                if i == 0 and addr[0] in string.digits:
-                                    missed = i
-                                elif missed > -1 and addr[0] in string.digits:
-                                    address += addrs[missed] + ' ' + addr + ' '
-                                    missed = -1
-                                else:
-                                    address += addr + ' '
+                                if addr:
+                                    if i == 0 and addr[0] in string.digits:
+                                        missed = i
+                                    elif missed > -1 and addr[0] in string.digits:
+                                        address += addrs[missed] + ' ' + addr + ' '
+                                        missed = -1
+                                    else:
+                                        address += addr + ' '
                             address = address.strip().strip('\n')
                         elif 'snippet-price-commission' in str(element.attrib['class']).split():
                             agentComission = l(element.text)
