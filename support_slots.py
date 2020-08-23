@@ -21,9 +21,10 @@ from support_win import Ui_Form
 
 from lib import read_config, l, s, fine_phone, format_phone, fine_snils
 
-STATUSES = ['ЕСЛИподнять', 'берут', '---', 'недозвон', 'согласовывают', 'не-там', 'далеко', 'СамоПросмотр', 'НЕрегистрируют',
-            'НЕинтересно', 'ремонт-', 'санузел-', 'НЕберут', 'НЕсегодня', 'НЕскоро','ПОКАЗ', 'дорого','комиссия-',
-            'НЕТфото','НЕадекват', 'ДУБЛЬ', 'ВИРТ', 'СДАЛИ', 'КОРОТКИЙ', 'НЕИЗВ.СТАТУС']
+STATUSES = [ 'ПОКАЗ', 'берут', 'лучшиеЦена', 'лучшиеУсловия', '---', 'недозвон', 'согласовывают', '=не-там=', 'далеко',
+            'НЕинтересно', 'ремонт-', 'мебель-', 'санузел-', 'НЕберут', 'НЕсегодня', 'НЕскоро',
+            'НЕТфото','НЕадекват', 'ДУБЛЬ', 'СДАЛИ', 'КОРОТКИЙ', 'НЕИЗВ.СТАТУС']
+STATUSES_ADD = ['ЕСЛИподнять', 'СамоПросмотр', 'НЕрегистрируют', 'дорого', 'комиссия-', 'ВИРТ']
 CUTS = ('пгт', 'поселок городского типа',  'посёлок городского типа', 'пос', 'поселение', 'поселок', 'посёлок',
          'п', 'рп', 'рабочий посёлок', 'рабочий поселок', 'кп', 'курортный посёлок', 'курортный поселок', 'пс',
          'сс', 'смн', 'дп', 'дачный поселок', 'дачный посёлок', 'садовое товарищество',
@@ -188,14 +189,15 @@ class MainWindowSlots(Ui_Form):   # Определяем функции, кот�
                 if adr not in CUTS:
                     addrs.append(adr)
             missed = -1
-            for i, addr in enumerate(addrs):
-                if i == 0 and addr[0] in string.digits:
-                    missed = i
-                elif missed > -1 and addr[0] in string.digits:
-                    address += addrs[missed] + ' ' + addr + ' '
-                    missed = -1
-                else:
-                    address += addr + ' '
+            if len(addrs[0]):
+                for i, addr in enumerate(addrs):
+                    if i == 0 and addr[0] in string.digits:
+                        missed = i
+                    elif missed > -1 and addr[0] in string.digits:
+                        address += addrs[missed] + ' ' + addr + ' '
+                        missed = -1
+                    else:
+                        address += addr + ' '
             if card[self.colNames['square']]:
                 address += str(card[self.colNames['square']]) + 'м²'
             if card[self.colNames['roomCount']] != None:
@@ -290,7 +292,7 @@ class MainWindowSlots(Ui_Form):   # Определяем функции, кот�
                 sanuzel,withChildrensPets,additional,lift,chute,buildingType,balcon,windows = '','','','','','','',''
                 height,square,squareLive,squareKitchen = 0.0,0.0,0.0,0.0
                 roomCount,floor,maxFloor,cost,zalog,agentComission,buyerComission = 0,0,0,0,0,0,0
-                phone1, phone2, phone3, idINfinder = 0, 0, 0, 0
+                phone1, phone2, phone3, metroMinutes, idINfinder = 0, 0, 0, 0, 0
                 for i, row in enumerate(ws):
                     if i:
                         for j, cell in enumerate(row):
@@ -305,32 +307,37 @@ class MainWindowSlots(Ui_Form):   # Определяем функции, кот�
                                 typeObj = cell.value
                             elif j == xlsx_header.get('Метро', -1):
                                 metro = cell.value
+                                metroMinutes = l(cell.value)
                             elif j == xlsx_header.get('Адрес', -1):
-                                addressStopped = ''
-                                for adr in str(cell.value).lower().split(','):
-                                    stopped = False
-                                    for stopword in STOPWORDS:
-                                        if adr.find(stopword) > -1:
-                                            stopped = True
-                                    if not stopped:
-                                        addressStopped += ' ' + adr
-                                addressList = addressStopped.strip().replace(',', '').replace('.','')\
-                                    .replace('  ', ' ').replace('  ', ' ').split(' ')
-                                address = ''
-                                addrs = []
-                                for adr in addressList:
-                                    if adr not in CUTS:
-                                        addrs.append(adr)
-                                missed = -1
-                                for i, addr in enumerate(addrs):
-                                    if i == 0 and addr[0] in string.digits:
-                                        missed = i
-                                    elif missed > -1 and addr[0] in string.digits:
-                                        address += addrs[missed] + ' ' + addr + ' '
-                                        missed = -1
-                                    else:
-                                        address += addr + ' '
-                                address = address.strip()
+                                if str(cell.value).strip().strip('\n').strip().strip():
+                                    addressStopped = ''
+                                    for adr in str(cell.value).lower().split(','):
+                                        stopped = False
+                                        for stopword in STOPWORDS:
+                                            if adr.find(stopword) > -1:
+                                                stopped = True
+                                        if not stopped:
+                                            addressStopped += ' ' + adr
+                                    addressList = addressStopped.strip().replace(',', '').replace('.','')\
+                                        .replace('  ', ' ').replace('  ', ' ').split(' ')
+                                    address = ''
+                                    addrs = []
+                                    for adr in addressList:
+                                        if adr not in CUTS:
+                                            addrs.append(adr)
+                                    missed = -1
+                                    if len(addrs[0]):
+                                        for i, addr in enumerate(addrs):
+                                            if i == 0 and addr[0] in string.digits:
+                                                missed = i
+                                            elif missed > -1 and addr[0] in string.digits:
+                                                address += addrs[missed] + ' ' + addr + ' '
+                                                missed = -1
+                                            else:
+                                                address += addr + ' '
+                                    address = address.strip()
+                                else:
+                                    address = ''
                             elif j == xlsx_header.get('Площадь, м2', -1):
                                 parts = str(cell.value).split('/')
                                 for k, part in enumerate(parts):
@@ -410,26 +417,28 @@ class MainWindowSlots(Ui_Form):   # Определяем функции, кот�
                                 phone1 = ?, phone2 = ?, phone3 = ?, about = ?, remont = ?, roomSquare = ?,
                                 balcon = ?, windows = ?, sanuzel = ?, withChildrensPets = ?, additional = ?,
                                 height = ?, lift = ?, chute = ?, agentComission = ?, buyerComission = ?,
-                                buildingType = ?, cost = ?, zalog = ?, squareLive = ?, squareKitchen = ?
+                                buildingType = ?, cost = ?, zalog = ?, squareLive = ?, squareKitchen = ?,
+                                metroMinutes = ? 
                                 WHERE idINfinder = ?""",
                                 (linkINfinder, address,
                                 roomCount, typeObj, metro, square, floor, maxFloor, parking, phone1, phone2, phone3,
                                 about, remont, roomSquare, balcon, windows, sanuzel, withChildrensPets, additional,
                                 height, lift, chute, agentComission, buyerComission, buildingType, cost, zalog,
-                                squareLive,squareKitchen,idINfinder))
+                                squareLive,squareKitchen,metroMinutes,idINfinder))
                             else:
                                 cursorObj.execute("INSERT INTO cards (finderType,idINfinder,linkINfinder,address,"
                                                   "roomCount,typeObj,metro,square,floor,maxFloor,parking,phone1,phone2,"
                                                   "phone3,about,remont,roomSquare,balcon,windows,sanuzel,"
                                                   "withChildrensPets,additional,height,lift,chute,agentComission,"
-                                                  "buyerComission,buildingType,cost,zalog,squareLive,squareKitchen) "
+                                                  "buyerComission,buildingType,cost,zalog,squareLive,squareKitchen,"
+                                                  "metroMinutes) "
                                                   "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?"
-                                                  ",?)", (finderType,idINfinder,
+                                                  ",?,?)", (finderType,idINfinder,
                                                     linkINfinder,address,roomCount,typeObj,metro,square,floor,maxFloor,
                                                     parking,phone1,phone2,phone3,about,remont,roomSquare,balcon,
                                                     windows,sanuzel,withChildrensPets,additional,height,lift,chute,
                                                     agentComission,buyerComission,buildingType,cost,zalog,squareLive,
-                                                    squareKitchen))
+                                                    squareKitchen,metroMinutes))
                                 self.cianIDs += (idINfinder,)
                             self.con.commit()
             if file.startswith('avito') and file.endswith('.xlsx'):

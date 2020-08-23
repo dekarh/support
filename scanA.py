@@ -7,7 +7,7 @@ from PyQt5.QtPrintSupport import *
 import os
 import sys
 import string
-from lxml import html
+from lxml import html, cssselect
 from datetime import datetime
 
 import openpyxl
@@ -217,7 +217,7 @@ class MainWindow(QMainWindow):
                 metroMeters = 0
                 square = 0.0
                 for element in card.getiterator():
-                    if element.attrib.get('class', None):
+                    if element.attrib.get('class', None): #and element.attrib.get('title',None):
                         if 'snippet-link' in str(element.attrib['class']).split():
                             linkINfinder = element.attrib['href']
                             if linkINfinder[:4] != 'http':
@@ -228,8 +228,11 @@ class MainWindow(QMainWindow):
                                 if linkINfinder[i] not in string.digits:
                                     ch_num = i + 1
                                     break
-                            idINfinder = int(linkINfinder[ch_num:])
-                            parts = str(element.attrib['title']).split(',')
+                            try:
+                                idINfinder = int(linkINfinder[ch_num:])
+                            except ValueError:
+                                continue
+                            parts = str(element.attrib.get('title','')).split(',')
                             for part in parts:
                                 if part.find('/') > -1:
                                     floor = l(part.split('/')[0])
@@ -271,7 +274,7 @@ class MainWindow(QMainWindow):
                             agentComission = l(element.text)
                             buyerComission = l(element.text)
                         elif 'snippet-price' in str(element.attrib['class']).split():
-                            cost = l(element.text)
+                            cost = l(element.cssselect('meta[itemprop="price"]')[0].get('content'))
                         elif 'item-address-georeferences-item__content' in str(element.attrib['class']).split():
                             metro = str(element.text)
                         elif 'item-address-georeferences-item__after' in str(element.attrib['class']).split():
